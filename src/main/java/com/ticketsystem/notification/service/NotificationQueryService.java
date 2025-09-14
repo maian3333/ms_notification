@@ -6,6 +6,7 @@ import com.ticketsystem.notification.repository.NotificationRepository;
 import com.ticketsystem.notification.service.criteria.NotificationCriteria;
 import com.ticketsystem.notification.service.dto.NotificationDTO;
 import com.ticketsystem.notification.service.mapper.NotificationMapper;
+import jakarta.persistence.criteria.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -72,15 +73,20 @@ public class NotificationQueryService extends QueryService<Notification> {
             // This has to be called first, because the distinct method returns null
             specification = Specification.allOf(
                 Boolean.TRUE.equals(criteria.getDistinct()) ? distinct(criteria.getDistinct()) : null,
-                buildSpecification(criteria.getId(), Notification_.id),
+                buildRangeSpecification(criteria.getId(), Notification_.id),
                 buildSpecification(criteria.getRecipientId(), Notification_.recipientId),
-                buildStringSpecification(criteria.getType(), Notification_.type),
-                buildStringSpecification(criteria.getTitle(), Notification_.title),
-                buildSpecification(criteria.getIsRead(), Notification_.isRead),
-                buildStringSpecification(criteria.getRelatedEntityType(), Notification_.relatedEntityType),
-                buildSpecification(criteria.getRelatedEntityId(), Notification_.relatedEntityId),
-                buildRangeSpecification(criteria.getCreatedAt(), Notification_.createdAt),
-                buildRangeSpecification(criteria.getScheduledAt(), Notification_.scheduledAt)
+                buildStringSpecification(criteria.getTemplateType(), Notification_.templateType),
+                buildStringSpecification(criteria.getTemplateLanguage(), Notification_.templateLanguage),
+                buildStringSpecification(criteria.getChannel(), Notification_.channel),
+                buildStringSpecification(criteria.getMetadata(), Notification_.metadata),
+                buildRangeSpecification(criteria.getSentAt(), Notification_.sentAt),
+                buildRangeSpecification(criteria.getDeliveredAt(), Notification_.deliveredAt),
+                buildRangeSpecification(criteria.getReadAt(), Notification_.readAt),
+                buildStringSpecification(criteria.getStatus(), Notification_.status),
+                buildSpecification(criteria.getBookingId(), Notification_.bookingId),
+                buildSpecification(criteria.getTemplateId(), root ->
+                    root.join(Notification_.template, JoinType.LEFT).get(NotificationTemplate_.id)
+                )
             );
         }
         return specification;

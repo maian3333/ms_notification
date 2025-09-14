@@ -1,5 +1,6 @@
 package com.ticketsystem.notification.domain;
 
+import static com.ticketsystem.notification.domain.NotificationTemplateTestSamples.*;
 import static com.ticketsystem.notification.domain.NotificationTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,5 +21,17 @@ class NotificationTest {
 
         notification2 = getNotificationSample2();
         assertThat(notification1).isNotEqualTo(notification2);
+    }
+
+    @Test
+    void templateTest() {
+        Notification notification = getNotificationRandomSampleGenerator();
+        NotificationTemplate notificationTemplateBack = getNotificationTemplateRandomSampleGenerator();
+
+        notification.setTemplate(notificationTemplateBack);
+        assertThat(notification.getTemplate()).isEqualTo(notificationTemplateBack);
+
+        notification.template(null);
+        assertThat(notification.getTemplate()).isNull();
     }
 }

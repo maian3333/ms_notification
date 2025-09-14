@@ -79,6 +79,7 @@ public class CacheConfiguration {
     public JCacheManagerCustomizer cacheManagerCustomizer(javax.cache.configuration.Configuration<Object, Object> jcacheConfiguration) {
         return cm -> {
             createCache(cm, com.ticketsystem.notification.domain.Notification.class.getName(), jcacheConfiguration);
+            createCache(cm, com.ticketsystem.notification.domain.NotificationTemplate.class.getName(), jcacheConfiguration);
             // jhipster-needle-redis-add-entry
         };
     }

@@ -77,13 +77,16 @@ class NotificationCriteriaTest {
     private static void setAllFilters(NotificationCriteria notificationCriteria) {
         notificationCriteria.id();
         notificationCriteria.recipientId();
-        notificationCriteria.type();
-        notificationCriteria.title();
-        notificationCriteria.isRead();
-        notificationCriteria.relatedEntityType();
-        notificationCriteria.relatedEntityId();
-        notificationCriteria.createdAt();
-        notificationCriteria.scheduledAt();
+        notificationCriteria.templateType();
+        notificationCriteria.templateLanguage();
+        notificationCriteria.channel();
+        notificationCriteria.metadata();
+        notificationCriteria.sentAt();
+        notificationCriteria.deliveredAt();
+        notificationCriteria.readAt();
+        notificationCriteria.status();
+        notificationCriteria.bookingId();
+        notificationCriteria.templateId();
         notificationCriteria.distinct();
     }
 
@@ -92,13 +95,16 @@ class NotificationCriteriaTest {
             criteria ->
                 condition.apply(criteria.getId()) &&
                 condition.apply(criteria.getRecipientId()) &&
-                condition.apply(criteria.getType()) &&
-                condition.apply(criteria.getTitle()) &&
-                condition.apply(criteria.getIsRead()) &&
-                condition.apply(criteria.getRelatedEntityType()) &&
-                condition.apply(criteria.getRelatedEntityId()) &&
-                condition.apply(criteria.getCreatedAt()) &&
-                condition.apply(criteria.getScheduledAt()) &&
+                condition.apply(criteria.getTemplateType()) &&
+                condition.apply(criteria.getTemplateLanguage()) &&
+                condition.apply(criteria.getChannel()) &&
+                condition.apply(criteria.getMetadata()) &&
+                condition.apply(criteria.getSentAt()) &&
+                condition.apply(criteria.getDeliveredAt()) &&
+                condition.apply(criteria.getReadAt()) &&
+                condition.apply(criteria.getStatus()) &&
+                condition.apply(criteria.getBookingId()) &&
+                condition.apply(criteria.getTemplateId()) &&
                 condition.apply(criteria.getDistinct()),
             "every filter matches"
         );
@@ -112,13 +118,16 @@ class NotificationCriteriaTest {
             criteria ->
                 condition.apply(criteria.getId(), copy.getId()) &&
                 condition.apply(criteria.getRecipientId(), copy.getRecipientId()) &&
-                condition.apply(criteria.getType(), copy.getType()) &&
-                condition.apply(criteria.getTitle(), copy.getTitle()) &&
-                condition.apply(criteria.getIsRead(), copy.getIsRead()) &&
-                condition.apply(criteria.getRelatedEntityType(), copy.getRelatedEntityType()) &&
-                condition.apply(criteria.getRelatedEntityId(), copy.getRelatedEntityId()) &&
-                condition.apply(criteria.getCreatedAt(), copy.getCreatedAt()) &&
-                condition.apply(criteria.getScheduledAt(), copy.getScheduledAt()) &&
+                condition.apply(criteria.getTemplateType(), copy.getTemplateType()) &&
+                condition.apply(criteria.getTemplateLanguage(), copy.getTemplateLanguage()) &&
+                condition.apply(criteria.getChannel(), copy.getChannel()) &&
+                condition.apply(criteria.getMetadata(), copy.getMetadata()) &&
+                condition.apply(criteria.getSentAt(), copy.getSentAt()) &&
+                condition.apply(criteria.getDeliveredAt(), copy.getDeliveredAt()) &&
+                condition.apply(criteria.getReadAt(), copy.getReadAt()) &&
+                condition.apply(criteria.getStatus(), copy.getStatus()) &&
+                condition.apply(criteria.getBookingId(), copy.getBookingId()) &&
+                condition.apply(criteria.getTemplateId(), copy.getTemplateId()) &&
                 condition.apply(criteria.getDistinct(), copy.getDistinct()),
             "every filter matches"
         );

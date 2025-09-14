@@ -13,38 +13,40 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class NotificationDTO implements Serializable {
 
-    @NotNull
-    private UUID id;
+    private Long id;
 
     @NotNull
     private UUID recipientId;
 
-    @NotNull
-    private String type;
+    private String templateType;
+
+    private String templateLanguage;
 
     @NotNull
-    private String title;
+    private String channel;
 
     @Lob
-    private String message;
+    private String content;
 
-    @NotNull
-    private Boolean isRead;
+    private String metadata;
 
-    private String relatedEntityType;
+    private Instant sentAt;
 
-    private UUID relatedEntityId;
+    private Instant deliveredAt;
 
-    @NotNull
-    private Instant createdAt;
+    private Instant readAt;
 
-    private Instant scheduledAt;
+    private String status;
 
-    public UUID getId() {
+    private UUID bookingId;
+
+    private NotificationTemplateDTO template;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -56,68 +58,92 @@ public class NotificationDTO implements Serializable {
         this.recipientId = recipientId;
     }
 
-    public String getType() {
-        return type;
+    public String getTemplateType() {
+        return templateType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTemplateType(String templateType) {
+        this.templateType = templateType;
     }
 
-    public String getTitle() {
-        return title;
+    public String getTemplateLanguage() {
+        return templateLanguage;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTemplateLanguage(String templateLanguage) {
+        this.templateLanguage = templateLanguage;
     }
 
-    public String getMessage() {
-        return message;
+    public String getChannel() {
+        return channel;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 
-    public Boolean getIsRead() {
-        return isRead;
+    public String getContent() {
+        return content;
     }
 
-    public void setIsRead(Boolean isRead) {
-        this.isRead = isRead;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getRelatedEntityType() {
-        return relatedEntityType;
+    public String getMetadata() {
+        return metadata;
     }
 
-    public void setRelatedEntityType(String relatedEntityType) {
-        this.relatedEntityType = relatedEntityType;
+    public void setMetadata(String metadata) {
+        this.metadata = metadata;
     }
 
-    public UUID getRelatedEntityId() {
-        return relatedEntityId;
+    public Instant getSentAt() {
+        return sentAt;
     }
 
-    public void setRelatedEntityId(UUID relatedEntityId) {
-        this.relatedEntityId = relatedEntityId;
+    public void setSentAt(Instant sentAt) {
+        this.sentAt = sentAt;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    public Instant getDeliveredAt() {
+        return deliveredAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    public void setDeliveredAt(Instant deliveredAt) {
+        this.deliveredAt = deliveredAt;
     }
 
-    public Instant getScheduledAt() {
-        return scheduledAt;
+    public Instant getReadAt() {
+        return readAt;
     }
 
-    public void setScheduledAt(Instant scheduledAt) {
-        this.scheduledAt = scheduledAt;
+    public void setReadAt(Instant readAt) {
+        this.readAt = readAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public UUID getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(UUID bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public NotificationTemplateDTO getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(NotificationTemplateDTO template) {
+        this.template = template;
     }
 
     @Override
@@ -145,16 +171,19 @@ public class NotificationDTO implements Serializable {
     @Override
     public String toString() {
         return "NotificationDTO{" +
-            "id='" + getId() + "'" +
+            "id=" + getId() +
             ", recipientId='" + getRecipientId() + "'" +
-            ", type='" + getType() + "'" +
-            ", title='" + getTitle() + "'" +
-            ", message='" + getMessage() + "'" +
-            ", isRead='" + getIsRead() + "'" +
-            ", relatedEntityType='" + getRelatedEntityType() + "'" +
-            ", relatedEntityId='" + getRelatedEntityId() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            ", scheduledAt='" + getScheduledAt() + "'" +
+            ", templateType='" + getTemplateType() + "'" +
+            ", templateLanguage='" + getTemplateLanguage() + "'" +
+            ", channel='" + getChannel() + "'" +
+            ", content='" + getContent() + "'" +
+            ", metadata='" + getMetadata() + "'" +
+            ", sentAt='" + getSentAt() + "'" +
+            ", deliveredAt='" + getDeliveredAt() + "'" +
+            ", readAt='" + getReadAt() + "'" +
+            ", status='" + getStatus() + "'" +
+            ", bookingId='" + getBookingId() + "'" +
+            ", template=" + getTemplate() +
             "}";
     }
 }

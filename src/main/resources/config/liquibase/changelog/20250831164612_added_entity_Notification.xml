@@ -11,40 +11,50 @@
     -->
     <changeSet id="20250831164612-1" author="jhipster">
         <createTable tableName="notification">
-            <column name="id" type="${uuidType}">
+            <column name="id" type="bigint" autoIncrement="true" startWith="1500">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="recipient_id" type="${uuidType}">
                 <constraints nullable="false" />
             </column>
-            <column name="type" type="varchar(255)">
-                <constraints nullable="false" />
-            </column>
-            <column name="title" type="varchar(255)">
-                <constraints nullable="false" />
-            </column>
-            <column name="message" type="${clobType}">
-                <constraints nullable="false" />
-            </column>
-            <column name="is_read" type="boolean">
-                <constraints nullable="false" />
-            </column>
-            <column name="related_entity_type" type="varchar(255)">
+            <column name="template_type" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="related_entity_id" type="${uuidType}">
+            <column name="template_language" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="created_at" type="${datetimeType}">
+            <column name="channel" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="scheduled_at" type="${datetimeType}">
+            <column name="content" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="metadata" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="sent_at" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="delivered_at" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="read_at" type="${datetimeType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="booking_id" type="${uuidType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="template_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="notification" columnName="created_at" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="notification" columnName="scheduled_at" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="notification" columnName="sent_at" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="notification" columnName="delivered_at" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="notification" columnName="read_at" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -63,16 +73,18 @@
                   separator=";"
                   tableName="notification"
                   usePreparedStatements="true">
-            <column name="id" type="string"/>
+            <column name="id" type="numeric"/>
             <column name="recipient_id" type="string"/>
-            <column name="type" type="string"/>
-            <column name="title" type="string"/>
-            <column name="message" type="clob"/>
-            <column name="is_read" type="boolean"/>
-            <column name="related_entity_type" type="string"/>
-            <column name="related_entity_id" type="string"/>
-            <column name="created_at" type="date"/>
-            <column name="scheduled_at" type="date"/>
+            <column name="template_type" type="string"/>
+            <column name="template_language" type="string"/>
+            <column name="channel" type="string"/>
+            <column name="content" type="clob"/>
+            <column name="metadata" type="string"/>
+            <column name="sent_at" type="date"/>
+            <column name="delivered_at" type="date"/>
+            <column name="read_at" type="date"/>
+            <column name="status" type="string"/>
+            <column name="booking_id" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

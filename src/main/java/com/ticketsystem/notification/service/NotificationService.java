@@ -2,7 +2,6 @@ package com.ticketsystem.notification.service;
 
 import com.ticketsystem.notification.service.dto.NotificationDTO;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Service Interface for managing {@link com.ticketsystem.notification.domain.Notification}.
@@ -38,12 +37,12 @@ public interface NotificationService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<NotificationDTO> findOne(UUID id);
+    Optional<NotificationDTO> findOne(Long id);
 
     /**
      * Delete the "id" notification.
      *
      * @param id the id of the entity.
      */
-    void delete(UUID id);
+    void delete(Long id);
 }

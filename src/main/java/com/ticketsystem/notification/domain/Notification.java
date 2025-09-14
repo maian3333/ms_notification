@@ -21,60 +21,64 @@ public class Notification implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     @Id
-    @GeneratedValue
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "id", length = 36, nullable = false)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @NotNull
     @JdbcTypeCode(SqlTypes.VARCHAR)
     @Column(name = "recipient_id", length = 36, nullable = false)
     private UUID recipientId;
 
-    @NotNull
-    @Column(name = "type", nullable = false)
-    private String type;
+    @Column(name = "template_type")
+    private String templateType;
+
+    @Column(name = "template_language")
+    private String templateLanguage;
 
     @NotNull
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "channel", nullable = false)
+    private String channel;
 
     @Lob
-    @Column(name = "message", nullable = false)
-    private String message;
+    @Column(name = "content")
+    private String content;
 
-    @NotNull
-    @Column(name = "is_read", nullable = false)
-    private Boolean isRead;
+    @Column(name = "metadata")
+    private String metadata;
 
-    @Column(name = "related_entity_type")
-    private String relatedEntityType;
+    @Column(name = "sent_at")
+    private Instant sentAt;
+
+    @Column(name = "delivered_at")
+    private Instant deliveredAt;
+
+    @Column(name = "read_at")
+    private Instant readAt;
+
+    @Column(name = "status")
+    private String status;
 
     @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "related_entity_id", length = 36)
-    private UUID relatedEntityId;
+    @Column(name = "booking_id", length = 36)
+    private UUID bookingId;
 
-    @NotNull
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
-
-    @Column(name = "scheduled_at")
-    private Instant scheduledAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private NotificationTemplate template;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public Notification id(UUID id) {
+    public Notification id(Long id) {
         this.setId(id);
         return this;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -91,108 +95,147 @@ public class Notification implements Serializable {
         this.recipientId = recipientId;
     }
 
-    public String getType() {
-        return this.type;
+    public String getTemplateType() {
+        return this.templateType;
     }
 
-    public Notification type(String type) {
-        this.setType(type);
+    public Notification templateType(String templateType) {
+        this.setTemplateType(templateType);
         return this;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTemplateType(String templateType) {
+        this.templateType = templateType;
     }
 
-    public String getTitle() {
-        return this.title;
+    public String getTemplateLanguage() {
+        return this.templateLanguage;
     }
 
-    public Notification title(String title) {
-        this.setTitle(title);
+    public Notification templateLanguage(String templateLanguage) {
+        this.setTemplateLanguage(templateLanguage);
         return this;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTemplateLanguage(String templateLanguage) {
+        this.templateLanguage = templateLanguage;
     }
 
-    public String getMessage() {
-        return this.message;
+    public String getChannel() {
+        return this.channel;
     }
 
-    public Notification message(String message) {
-        this.setMessage(message);
+    public Notification channel(String channel) {
+        this.setChannel(channel);
         return this;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 
-    public Boolean getIsRead() {
-        return this.isRead;
+    public String getContent() {
+        return this.content;
     }
 
-    public Notification isRead(Boolean isRead) {
-        this.setIsRead(isRead);
+    public Notification content(String content) {
+        this.setContent(content);
         return this;
     }
 
-    public void setIsRead(Boolean isRead) {
-        this.isRead = isRead;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getRelatedEntityType() {
-        return this.relatedEntityType;
+    public String getMetadata() {
+        return this.metadata;
     }
 
-    public Notification relatedEntityType(String relatedEntityType) {
-        this.setRelatedEntityType(relatedEntityType);
+    public Notification metadata(String metadata) {
+        this.setMetadata(metadata);
         return this;
     }
 
-    public void setRelatedEntityType(String relatedEntityType) {
-        this.relatedEntityType = relatedEntityType;
+    public void setMetadata(String metadata) {
+        this.metadata = metadata;
     }
 
-    public UUID getRelatedEntityId() {
-        return this.relatedEntityId;
+    public Instant getSentAt() {
+        return this.sentAt;
     }
 
-    public Notification relatedEntityId(UUID relatedEntityId) {
-        this.setRelatedEntityId(relatedEntityId);
+    public Notification sentAt(Instant sentAt) {
+        this.setSentAt(sentAt);
         return this;
     }
 
-    public void setRelatedEntityId(UUID relatedEntityId) {
-        this.relatedEntityId = relatedEntityId;
+    public void setSentAt(Instant sentAt) {
+        this.sentAt = sentAt;
     }
 
-    public Instant getCreatedAt() {
-        return this.createdAt;
+    public Instant getDeliveredAt() {
+        return this.deliveredAt;
     }
 
-    public Notification createdAt(Instant createdAt) {
-        this.setCreatedAt(createdAt);
+    public Notification deliveredAt(Instant deliveredAt) {
+        this.setDeliveredAt(deliveredAt);
         return this;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    public void setDeliveredAt(Instant deliveredAt) {
+        this.deliveredAt = deliveredAt;
     }
 
-    public Instant getScheduledAt() {
-        return this.scheduledAt;
+    public Instant getReadAt() {
+        return this.readAt;
     }
 
-    public Notification scheduledAt(Instant scheduledAt) {
-        this.setScheduledAt(scheduledAt);
+    public Notification readAt(Instant readAt) {
+        this.setReadAt(readAt);
         return this;
     }
 
-    public void setScheduledAt(Instant scheduledAt) {
-        this.scheduledAt = scheduledAt;
+    public void setReadAt(Instant readAt) {
+        this.readAt = readAt;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public Notification status(String status) {
+        this.setStatus(status);
+        return this;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public UUID getBookingId() {
+        return this.bookingId;
+    }
+
+    public Notification bookingId(UUID bookingId) {
+        this.setBookingId(bookingId);
+        return this;
+    }
+
+    public void setBookingId(UUID bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public NotificationTemplate getTemplate() {
+        return this.template;
+    }
+
+    public void setTemplate(NotificationTemplate notificationTemplate) {
+        this.template = notificationTemplate;
+    }
+
+    public Notification template(NotificationTemplate notificationTemplate) {
+        this.setTemplate(notificationTemplate);
+        return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
@@ -220,14 +263,16 @@ public class Notification implements Serializable {
         return "Notification{" +
             "id=" + getId() +
             ", recipientId='" + getRecipientId() + "'" +
-            ", type='" + getType() + "'" +
-            ", title='" + getTitle() + "'" +
-            ", message='" + getMessage() + "'" +
-            ", isRead='" + getIsRead() + "'" +
-            ", relatedEntityType='" + getRelatedEntityType() + "'" +
-            ", relatedEntityId='" + getRelatedEntityId() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            ", scheduledAt='" + getScheduledAt() + "'" +
+            ", templateType='" + getTemplateType() + "'" +
+            ", templateLanguage='" + getTemplateLanguage() + "'" +
+            ", channel='" + getChannel() + "'" +
+            ", content='" + getContent() + "'" +
+            ", metadata='" + getMetadata() + "'" +
+            ", sentAt='" + getSentAt() + "'" +
+            ", deliveredAt='" + getDeliveredAt() + "'" +
+            ", readAt='" + getReadAt() + "'" +
+            ", status='" + getStatus() + "'" +
+            ", bookingId='" + getBookingId() + "'" +
             "}";
     }
 }

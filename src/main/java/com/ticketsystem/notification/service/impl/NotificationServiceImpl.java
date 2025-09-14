@@ -6,7 +6,6 @@ import com.ticketsystem.notification.service.NotificationService;
 import com.ticketsystem.notification.service.dto.NotificationDTO;
 import com.ticketsystem.notification.service.mapper.NotificationMapper;
 import java.util.Optional;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -63,13 +62,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<NotificationDTO> findOne(UUID id) {
+    public Optional<NotificationDTO> findOne(Long id) {
         LOG.debug("Request to get Notification : {}", id);
         return notificationRepository.findById(id).map(notificationMapper::toDto);
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(Long id) {
         LOG.debug("Request to delete Notification : {}", id);
         notificationRepository.deleteById(id);
     }

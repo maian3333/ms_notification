@@ -1,0 +1,44 @@
+{
+  "annotations": {
+    "changelogDate": "20250914120803"
+  },
+  "applications": ["ms_notification"],
+  "clientRootFolder": "ms_notification",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "type",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "language",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "subject",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "emailBody",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "smsTemplate",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "pushTemplate",
+      "fieldType": "String"
+    }
+  ],
+  "jpaMetamodelFiltering": true,
+  "microserviceName": "ms_notification",
+  "name": "NotificationTemplate",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

@@ -48,14 +48,16 @@ public class NotificationAsserts {
         assertThat(actual)
             .as("Verify Notification relevant properties")
             .satisfies(a -> assertThat(a.getRecipientId()).as("check recipientId").isEqualTo(expected.getRecipientId()))
-            .satisfies(a -> assertThat(a.getType()).as("check type").isEqualTo(expected.getType()))
-            .satisfies(a -> assertThat(a.getTitle()).as("check title").isEqualTo(expected.getTitle()))
-            .satisfies(a -> assertThat(a.getMessage()).as("check message").isEqualTo(expected.getMessage()))
-            .satisfies(a -> assertThat(a.getIsRead()).as("check isRead").isEqualTo(expected.getIsRead()))
-            .satisfies(a -> assertThat(a.getRelatedEntityType()).as("check relatedEntityType").isEqualTo(expected.getRelatedEntityType()))
-            .satisfies(a -> assertThat(a.getRelatedEntityId()).as("check relatedEntityId").isEqualTo(expected.getRelatedEntityId()))
-            .satisfies(a -> assertThat(a.getCreatedAt()).as("check createdAt").isEqualTo(expected.getCreatedAt()))
-            .satisfies(a -> assertThat(a.getScheduledAt()).as("check scheduledAt").isEqualTo(expected.getScheduledAt()));
+            .satisfies(a -> assertThat(a.getTemplateType()).as("check templateType").isEqualTo(expected.getTemplateType()))
+            .satisfies(a -> assertThat(a.getTemplateLanguage()).as("check templateLanguage").isEqualTo(expected.getTemplateLanguage()))
+            .satisfies(a -> assertThat(a.getChannel()).as("check channel").isEqualTo(expected.getChannel()))
+            .satisfies(a -> assertThat(a.getContent()).as("check content").isEqualTo(expected.getContent()))
+            .satisfies(a -> assertThat(a.getMetadata()).as("check metadata").isEqualTo(expected.getMetadata()))
+            .satisfies(a -> assertThat(a.getSentAt()).as("check sentAt").isEqualTo(expected.getSentAt()))
+            .satisfies(a -> assertThat(a.getDeliveredAt()).as("check deliveredAt").isEqualTo(expected.getDeliveredAt()))
+            .satisfies(a -> assertThat(a.getReadAt()).as("check readAt").isEqualTo(expected.getReadAt()))
+            .satisfies(a -> assertThat(a.getStatus()).as("check status").isEqualTo(expected.getStatus()))
+            .satisfies(a -> assertThat(a.getBookingId()).as("check bookingId").isEqualTo(expected.getBookingId()));
     }
 
     /**
@@ -65,6 +67,8 @@ public class NotificationAsserts {
      * @param actual the actual entity
      */
     public static void assertNotificationUpdatableRelationshipsEquals(Notification expected, Notification actual) {
-        // empty method
+        assertThat(actual)
+            .as("Verify Notification relationships")
+            .satisfies(a -> assertThat(a.getTemplate()).as("check template").isEqualTo(expected.getTemplate()));
     }
 }

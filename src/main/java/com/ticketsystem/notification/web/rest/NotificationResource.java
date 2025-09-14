@@ -13,7 +13,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,7 +88,7 @@ public class NotificationResource {
      */
     @PutMapping("/{id}")
     public ResponseEntity<NotificationDTO> updateNotification(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody NotificationDTO notificationDTO
     ) throws URISyntaxException {
         LOG.debug("REST request to update Notification : {}, {}", id, notificationDTO);
@@ -123,7 +122,7 @@ public class NotificationResource {
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<NotificationDTO> partialUpdateNotification(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody NotificationDTO notificationDTO
     ) throws URISyntaxException {
         LOG.debug("REST request to partial update Notification partially : {}, {}", id, notificationDTO);
@@ -184,7 +183,7 @@ public class NotificationResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the notificationDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<NotificationDTO> getNotification(@PathVariable("id") UUID id) {
+    public ResponseEntity<NotificationDTO> getNotification(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Notification : {}", id);
         Optional<NotificationDTO> notificationDTO = notificationService.findOne(id);
         return ResponseUtil.wrapOrNotFound(notificationDTO);
@@ -197,7 +196,7 @@ public class NotificationResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNotification(@PathVariable("id") UUID id) {
+    public ResponseEntity<Void> deleteNotification(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Notification : {}", id);
         notificationService.delete(id);
         return ResponseEntity.noContent()

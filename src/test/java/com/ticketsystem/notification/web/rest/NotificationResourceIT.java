@@ -11,13 +11,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ticketsystem.notification.IntegrationTest;
 import com.ticketsystem.notification.domain.Notification;
+import com.ticketsystem.notification.domain.NotificationTemplate;
 import com.ticketsystem.notification.repository.NotificationRepository;
 import com.ticketsystem.notification.service.dto.NotificationDTO;
 import com.ticketsystem.notification.service.mapper.NotificationMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,32 +42,41 @@ class NotificationResourceIT {
     private static final UUID DEFAULT_RECIPIENT_ID = UUID.randomUUID();
     private static final UUID UPDATED_RECIPIENT_ID = UUID.randomUUID();
 
-    private static final String DEFAULT_TYPE = "AAAAAAAAAA";
-    private static final String UPDATED_TYPE = "BBBBBBBBBB";
+    private static final String DEFAULT_TEMPLATE_TYPE = "AAAAAAAAAA";
+    private static final String UPDATED_TEMPLATE_TYPE = "BBBBBBBBBB";
 
-    private static final String DEFAULT_TITLE = "AAAAAAAAAA";
-    private static final String UPDATED_TITLE = "BBBBBBBBBB";
+    private static final String DEFAULT_TEMPLATE_LANGUAGE = "AAAAAAAAAA";
+    private static final String UPDATED_TEMPLATE_LANGUAGE = "BBBBBBBBBB";
 
-    private static final String DEFAULT_MESSAGE = "AAAAAAAAAA";
-    private static final String UPDATED_MESSAGE = "BBBBBBBBBB";
+    private static final String DEFAULT_CHANNEL = "AAAAAAAAAA";
+    private static final String UPDATED_CHANNEL = "BBBBBBBBBB";
 
-    private static final Boolean DEFAULT_IS_READ = false;
-    private static final Boolean UPDATED_IS_READ = true;
+    private static final String DEFAULT_CONTENT = "AAAAAAAAAA";
+    private static final String UPDATED_CONTENT = "BBBBBBBBBB";
 
-    private static final String DEFAULT_RELATED_ENTITY_TYPE = "AAAAAAAAAA";
-    private static final String UPDATED_RELATED_ENTITY_TYPE = "BBBBBBBBBB";
+    private static final String DEFAULT_METADATA = "AAAAAAAAAA";
+    private static final String UPDATED_METADATA = "BBBBBBBBBB";
 
-    private static final UUID DEFAULT_RELATED_ENTITY_ID = UUID.randomUUID();
-    private static final UUID UPDATED_RELATED_ENTITY_ID = UUID.randomUUID();
+    private static final Instant DEFAULT_SENT_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_SENT_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final Instant DEFAULT_CREATED_AT = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_CREATED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final Instant DEFAULT_DELIVERED_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_DELIVERED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final Instant DEFAULT_SCHEDULED_AT = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_SCHEDULED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final Instant DEFAULT_READ_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_READ_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final String DEFAULT_STATUS = "AAAAAAAAAA";
+    private static final String UPDATED_STATUS = "BBBBBBBBBB";
+
+    private static final UUID DEFAULT_BOOKING_ID = UUID.randomUUID();
+    private static final UUID UPDATED_BOOKING_ID = UUID.randomUUID();
 
     private static final String ENTITY_API_URL = "/api/notifications";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private ObjectMapper om;
@@ -94,14 +106,16 @@ class NotificationResourceIT {
     public static Notification createEntity() {
         return new Notification()
             .recipientId(DEFAULT_RECIPIENT_ID)
-            .type(DEFAULT_TYPE)
-            .title(DEFAULT_TITLE)
-            .message(DEFAULT_MESSAGE)
-            .isRead(DEFAULT_IS_READ)
-            .relatedEntityType(DEFAULT_RELATED_ENTITY_TYPE)
-            .relatedEntityId(DEFAULT_RELATED_ENTITY_ID)
-            .createdAt(DEFAULT_CREATED_AT)
-            .scheduledAt(DEFAULT_SCHEDULED_AT);
+            .templateType(DEFAULT_TEMPLATE_TYPE)
+            .templateLanguage(DEFAULT_TEMPLATE_LANGUAGE)
+            .channel(DEFAULT_CHANNEL)
+            .content(DEFAULT_CONTENT)
+            .metadata(DEFAULT_METADATA)
+            .sentAt(DEFAULT_SENT_AT)
+            .deliveredAt(DEFAULT_DELIVERED_AT)
+            .readAt(DEFAULT_READ_AT)
+            .status(DEFAULT_STATUS)
+            .bookingId(DEFAULT_BOOKING_ID);
     }
 
     /**
@@ -113,14 +127,16 @@ class NotificationResourceIT {
     public static Notification createUpdatedEntity() {
         return new Notification()
             .recipientId(UPDATED_RECIPIENT_ID)
-            .type(UPDATED_TYPE)
-            .title(UPDATED_TITLE)
-            .message(UPDATED_MESSAGE)
-            .isRead(UPDATED_IS_READ)
-            .relatedEntityType(UPDATED_RELATED_ENTITY_TYPE)
-            .relatedEntityId(UPDATED_RELATED_ENTITY_ID)
-            .createdAt(UPDATED_CREATED_AT)
-            .scheduledAt(UPDATED_SCHEDULED_AT);
+            .templateType(UPDATED_TEMPLATE_TYPE)
+            .templateLanguage(UPDATED_TEMPLATE_LANGUAGE)
+            .channel(UPDATED_CHANNEL)
+            .content(UPDATED_CONTENT)
+            .metadata(UPDATED_METADATA)
+            .sentAt(UPDATED_SENT_AT)
+            .deliveredAt(UPDATED_DELIVERED_AT)
+            .readAt(UPDATED_READ_AT)
+            .status(UPDATED_STATUS)
+            .bookingId(UPDATED_BOOKING_ID);
     }
 
     @BeforeEach
@@ -166,7 +182,7 @@ class NotificationResourceIT {
     @Transactional
     void createNotificationWithExistingId() throws Exception {
         // Create the Notification with an existing ID
-        insertedNotification = notificationRepository.saveAndFlush(notification);
+        notification.setId(1L);
         NotificationDTO notificationDTO = notificationMapper.toDto(notification);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -203,67 +219,10 @@ class NotificationResourceIT {
 
     @Test
     @Transactional
-    void checkTypeIsRequired() throws Exception {
+    void checkChannelIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        notification.setType(null);
-
-        // Create the Notification, which fails.
-        NotificationDTO notificationDTO = notificationMapper.toDto(notification);
-
-        restNotificationMockMvc
-            .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(notificationDTO))
-            )
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkTitleIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        notification.setTitle(null);
-
-        // Create the Notification, which fails.
-        NotificationDTO notificationDTO = notificationMapper.toDto(notification);
-
-        restNotificationMockMvc
-            .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(notificationDTO))
-            )
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkIsReadIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        notification.setIsRead(null);
-
-        // Create the Notification, which fails.
-        NotificationDTO notificationDTO = notificationMapper.toDto(notification);
-
-        restNotificationMockMvc
-            .perform(
-                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(notificationDTO))
-            )
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkCreatedAtIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        notification.setCreatedAt(null);
+        notification.setChannel(null);
 
         // Create the Notification, which fails.
         NotificationDTO notificationDTO = notificationMapper.toDto(notification);
@@ -288,16 +247,18 @@ class NotificationResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(notification.getId().toString())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(notification.getId().intValue())))
             .andExpect(jsonPath("$.[*].recipientId").value(hasItem(DEFAULT_RECIPIENT_ID.toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
-            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)))
-            .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
-            .andExpect(jsonPath("$.[*].isRead").value(hasItem(DEFAULT_IS_READ)))
-            .andExpect(jsonPath("$.[*].relatedEntityType").value(hasItem(DEFAULT_RELATED_ENTITY_TYPE)))
-            .andExpect(jsonPath("$.[*].relatedEntityId").value(hasItem(DEFAULT_RELATED_ENTITY_ID.toString())))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
-            .andExpect(jsonPath("$.[*].scheduledAt").value(hasItem(DEFAULT_SCHEDULED_AT.toString())));
+            .andExpect(jsonPath("$.[*].templateType").value(hasItem(DEFAULT_TEMPLATE_TYPE)))
+            .andExpect(jsonPath("$.[*].templateLanguage").value(hasItem(DEFAULT_TEMPLATE_LANGUAGE)))
+            .andExpect(jsonPath("$.[*].channel").value(hasItem(DEFAULT_CHANNEL)))
+            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)))
+            .andExpect(jsonPath("$.[*].metadata").value(hasItem(DEFAULT_METADATA)))
+            .andExpect(jsonPath("$.[*].sentAt").value(hasItem(DEFAULT_SENT_AT.toString())))
+            .andExpect(jsonPath("$.[*].deliveredAt").value(hasItem(DEFAULT_DELIVERED_AT.toString())))
+            .andExpect(jsonPath("$.[*].readAt").value(hasItem(DEFAULT_READ_AT.toString())))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)))
+            .andExpect(jsonPath("$.[*].bookingId").value(hasItem(DEFAULT_BOOKING_ID.toString())));
     }
 
     @Test
@@ -311,16 +272,18 @@ class NotificationResourceIT {
             .perform(get(ENTITY_API_URL_ID, notification.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(notification.getId().toString()))
+            .andExpect(jsonPath("$.id").value(notification.getId().intValue()))
             .andExpect(jsonPath("$.recipientId").value(DEFAULT_RECIPIENT_ID.toString()))
-            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE))
-            .andExpect(jsonPath("$.title").value(DEFAULT_TITLE))
-            .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE))
-            .andExpect(jsonPath("$.isRead").value(DEFAULT_IS_READ))
-            .andExpect(jsonPath("$.relatedEntityType").value(DEFAULT_RELATED_ENTITY_TYPE))
-            .andExpect(jsonPath("$.relatedEntityId").value(DEFAULT_RELATED_ENTITY_ID.toString()))
-            .andExpect(jsonPath("$.createdAt").value(DEFAULT_CREATED_AT.toString()))
-            .andExpect(jsonPath("$.scheduledAt").value(DEFAULT_SCHEDULED_AT.toString()));
+            .andExpect(jsonPath("$.templateType").value(DEFAULT_TEMPLATE_TYPE))
+            .andExpect(jsonPath("$.templateLanguage").value(DEFAULT_TEMPLATE_LANGUAGE))
+            .andExpect(jsonPath("$.channel").value(DEFAULT_CHANNEL))
+            .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT))
+            .andExpect(jsonPath("$.metadata").value(DEFAULT_METADATA))
+            .andExpect(jsonPath("$.sentAt").value(DEFAULT_SENT_AT.toString()))
+            .andExpect(jsonPath("$.deliveredAt").value(DEFAULT_DELIVERED_AT.toString()))
+            .andExpect(jsonPath("$.readAt").value(DEFAULT_READ_AT.toString()))
+            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS))
+            .andExpect(jsonPath("$.bookingId").value(DEFAULT_BOOKING_ID.toString()));
     }
 
     @Test
@@ -329,9 +292,13 @@ class NotificationResourceIT {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        UUID id = notification.getId();
+        Long id = notification.getId();
 
         defaultNotificationFiltering("id.equals=" + id, "id.notEquals=" + id);
+
+        defaultNotificationFiltering("id.greaterThanOrEqual=" + id, "id.greaterThan=" + id);
+
+        defaultNotificationFiltering("id.lessThanOrEqual=" + id, "id.lessThan=" + id);
     }
 
     @Test
@@ -369,293 +336,415 @@ class NotificationResourceIT {
 
     @Test
     @Transactional
-    void getAllNotificationsByTypeIsEqualToSomething() throws Exception {
+    void getAllNotificationsByTemplateTypeIsEqualToSomething() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where type equals to
-        defaultNotificationFiltering("type.equals=" + DEFAULT_TYPE, "type.equals=" + UPDATED_TYPE);
+        // Get all the notificationList where templateType equals to
+        defaultNotificationFiltering("templateType.equals=" + DEFAULT_TEMPLATE_TYPE, "templateType.equals=" + UPDATED_TEMPLATE_TYPE);
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByTypeIsInShouldWork() throws Exception {
+    void getAllNotificationsByTemplateTypeIsInShouldWork() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where type in
-        defaultNotificationFiltering("type.in=" + DEFAULT_TYPE + "," + UPDATED_TYPE, "type.in=" + UPDATED_TYPE);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByTypeIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where type is not null
-        defaultNotificationFiltering("type.specified=true", "type.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByTypeContainsSomething() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where type contains
-        defaultNotificationFiltering("type.contains=" + DEFAULT_TYPE, "type.contains=" + UPDATED_TYPE);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByTypeNotContainsSomething() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where type does not contain
-        defaultNotificationFiltering("type.doesNotContain=" + UPDATED_TYPE, "type.doesNotContain=" + DEFAULT_TYPE);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByTitleIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where title equals to
-        defaultNotificationFiltering("title.equals=" + DEFAULT_TITLE, "title.equals=" + UPDATED_TITLE);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByTitleIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where title in
-        defaultNotificationFiltering("title.in=" + DEFAULT_TITLE + "," + UPDATED_TITLE, "title.in=" + UPDATED_TITLE);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByTitleIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where title is not null
-        defaultNotificationFiltering("title.specified=true", "title.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByTitleContainsSomething() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where title contains
-        defaultNotificationFiltering("title.contains=" + DEFAULT_TITLE, "title.contains=" + UPDATED_TITLE);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByTitleNotContainsSomething() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where title does not contain
-        defaultNotificationFiltering("title.doesNotContain=" + UPDATED_TITLE, "title.doesNotContain=" + DEFAULT_TITLE);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByIsReadIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where isRead equals to
-        defaultNotificationFiltering("isRead.equals=" + DEFAULT_IS_READ, "isRead.equals=" + UPDATED_IS_READ);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByIsReadIsInShouldWork() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where isRead in
-        defaultNotificationFiltering("isRead.in=" + DEFAULT_IS_READ + "," + UPDATED_IS_READ, "isRead.in=" + UPDATED_IS_READ);
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByIsReadIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where isRead is not null
-        defaultNotificationFiltering("isRead.specified=true", "isRead.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByRelatedEntityTypeIsEqualToSomething() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where relatedEntityType equals to
+        // Get all the notificationList where templateType in
         defaultNotificationFiltering(
-            "relatedEntityType.equals=" + DEFAULT_RELATED_ENTITY_TYPE,
-            "relatedEntityType.equals=" + UPDATED_RELATED_ENTITY_TYPE
+            "templateType.in=" + DEFAULT_TEMPLATE_TYPE + "," + UPDATED_TEMPLATE_TYPE,
+            "templateType.in=" + UPDATED_TEMPLATE_TYPE
         );
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByRelatedEntityTypeIsInShouldWork() throws Exception {
+    void getAllNotificationsByTemplateTypeIsNullOrNotNull() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where relatedEntityType in
+        // Get all the notificationList where templateType is not null
+        defaultNotificationFiltering("templateType.specified=true", "templateType.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByTemplateTypeContainsSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where templateType contains
+        defaultNotificationFiltering("templateType.contains=" + DEFAULT_TEMPLATE_TYPE, "templateType.contains=" + UPDATED_TEMPLATE_TYPE);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByTemplateTypeNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where templateType does not contain
         defaultNotificationFiltering(
-            "relatedEntityType.in=" + DEFAULT_RELATED_ENTITY_TYPE + "," + UPDATED_RELATED_ENTITY_TYPE,
-            "relatedEntityType.in=" + UPDATED_RELATED_ENTITY_TYPE
+            "templateType.doesNotContain=" + UPDATED_TEMPLATE_TYPE,
+            "templateType.doesNotContain=" + DEFAULT_TEMPLATE_TYPE
         );
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByRelatedEntityTypeIsNullOrNotNull() throws Exception {
+    void getAllNotificationsByTemplateLanguageIsEqualToSomething() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where relatedEntityType is not null
-        defaultNotificationFiltering("relatedEntityType.specified=true", "relatedEntityType.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllNotificationsByRelatedEntityTypeContainsSomething() throws Exception {
-        // Initialize the database
-        insertedNotification = notificationRepository.saveAndFlush(notification);
-
-        // Get all the notificationList where relatedEntityType contains
+        // Get all the notificationList where templateLanguage equals to
         defaultNotificationFiltering(
-            "relatedEntityType.contains=" + DEFAULT_RELATED_ENTITY_TYPE,
-            "relatedEntityType.contains=" + UPDATED_RELATED_ENTITY_TYPE
+            "templateLanguage.equals=" + DEFAULT_TEMPLATE_LANGUAGE,
+            "templateLanguage.equals=" + UPDATED_TEMPLATE_LANGUAGE
         );
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByRelatedEntityTypeNotContainsSomething() throws Exception {
+    void getAllNotificationsByTemplateLanguageIsInShouldWork() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where relatedEntityType does not contain
+        // Get all the notificationList where templateLanguage in
         defaultNotificationFiltering(
-            "relatedEntityType.doesNotContain=" + UPDATED_RELATED_ENTITY_TYPE,
-            "relatedEntityType.doesNotContain=" + DEFAULT_RELATED_ENTITY_TYPE
+            "templateLanguage.in=" + DEFAULT_TEMPLATE_LANGUAGE + "," + UPDATED_TEMPLATE_LANGUAGE,
+            "templateLanguage.in=" + UPDATED_TEMPLATE_LANGUAGE
         );
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByRelatedEntityIdIsEqualToSomething() throws Exception {
+    void getAllNotificationsByTemplateLanguageIsNullOrNotNull() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where relatedEntityId equals to
+        // Get all the notificationList where templateLanguage is not null
+        defaultNotificationFiltering("templateLanguage.specified=true", "templateLanguage.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByTemplateLanguageContainsSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where templateLanguage contains
         defaultNotificationFiltering(
-            "relatedEntityId.equals=" + DEFAULT_RELATED_ENTITY_ID,
-            "relatedEntityId.equals=" + UPDATED_RELATED_ENTITY_ID
+            "templateLanguage.contains=" + DEFAULT_TEMPLATE_LANGUAGE,
+            "templateLanguage.contains=" + UPDATED_TEMPLATE_LANGUAGE
         );
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByRelatedEntityIdIsInShouldWork() throws Exception {
+    void getAllNotificationsByTemplateLanguageNotContainsSomething() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where relatedEntityId in
+        // Get all the notificationList where templateLanguage does not contain
         defaultNotificationFiltering(
-            "relatedEntityId.in=" + DEFAULT_RELATED_ENTITY_ID + "," + UPDATED_RELATED_ENTITY_ID,
-            "relatedEntityId.in=" + UPDATED_RELATED_ENTITY_ID
+            "templateLanguage.doesNotContain=" + UPDATED_TEMPLATE_LANGUAGE,
+            "templateLanguage.doesNotContain=" + DEFAULT_TEMPLATE_LANGUAGE
         );
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByRelatedEntityIdIsNullOrNotNull() throws Exception {
+    void getAllNotificationsByChannelIsEqualToSomething() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where relatedEntityId is not null
-        defaultNotificationFiltering("relatedEntityId.specified=true", "relatedEntityId.specified=false");
+        // Get all the notificationList where channel equals to
+        defaultNotificationFiltering("channel.equals=" + DEFAULT_CHANNEL, "channel.equals=" + UPDATED_CHANNEL);
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByCreatedAtIsEqualToSomething() throws Exception {
+    void getAllNotificationsByChannelIsInShouldWork() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where createdAt equals to
-        defaultNotificationFiltering("createdAt.equals=" + DEFAULT_CREATED_AT, "createdAt.equals=" + UPDATED_CREATED_AT);
+        // Get all the notificationList where channel in
+        defaultNotificationFiltering("channel.in=" + DEFAULT_CHANNEL + "," + UPDATED_CHANNEL, "channel.in=" + UPDATED_CHANNEL);
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByCreatedAtIsInShouldWork() throws Exception {
+    void getAllNotificationsByChannelIsNullOrNotNull() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where createdAt in
-        defaultNotificationFiltering("createdAt.in=" + DEFAULT_CREATED_AT + "," + UPDATED_CREATED_AT, "createdAt.in=" + UPDATED_CREATED_AT);
+        // Get all the notificationList where channel is not null
+        defaultNotificationFiltering("channel.specified=true", "channel.specified=false");
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByCreatedAtIsNullOrNotNull() throws Exception {
+    void getAllNotificationsByChannelContainsSomething() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where createdAt is not null
-        defaultNotificationFiltering("createdAt.specified=true", "createdAt.specified=false");
+        // Get all the notificationList where channel contains
+        defaultNotificationFiltering("channel.contains=" + DEFAULT_CHANNEL, "channel.contains=" + UPDATED_CHANNEL);
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByScheduledAtIsEqualToSomething() throws Exception {
+    void getAllNotificationsByChannelNotContainsSomething() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where scheduledAt equals to
-        defaultNotificationFiltering("scheduledAt.equals=" + DEFAULT_SCHEDULED_AT, "scheduledAt.equals=" + UPDATED_SCHEDULED_AT);
+        // Get all the notificationList where channel does not contain
+        defaultNotificationFiltering("channel.doesNotContain=" + UPDATED_CHANNEL, "channel.doesNotContain=" + DEFAULT_CHANNEL);
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByScheduledAtIsInShouldWork() throws Exception {
+    void getAllNotificationsByMetadataIsEqualToSomething() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where scheduledAt in
+        // Get all the notificationList where metadata equals to
+        defaultNotificationFiltering("metadata.equals=" + DEFAULT_METADATA, "metadata.equals=" + UPDATED_METADATA);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByMetadataIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where metadata in
+        defaultNotificationFiltering("metadata.in=" + DEFAULT_METADATA + "," + UPDATED_METADATA, "metadata.in=" + UPDATED_METADATA);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByMetadataIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where metadata is not null
+        defaultNotificationFiltering("metadata.specified=true", "metadata.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByMetadataContainsSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where metadata contains
+        defaultNotificationFiltering("metadata.contains=" + DEFAULT_METADATA, "metadata.contains=" + UPDATED_METADATA);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByMetadataNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where metadata does not contain
+        defaultNotificationFiltering("metadata.doesNotContain=" + UPDATED_METADATA, "metadata.doesNotContain=" + DEFAULT_METADATA);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsBySentAtIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where sentAt equals to
+        defaultNotificationFiltering("sentAt.equals=" + DEFAULT_SENT_AT, "sentAt.equals=" + UPDATED_SENT_AT);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsBySentAtIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where sentAt in
+        defaultNotificationFiltering("sentAt.in=" + DEFAULT_SENT_AT + "," + UPDATED_SENT_AT, "sentAt.in=" + UPDATED_SENT_AT);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsBySentAtIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where sentAt is not null
+        defaultNotificationFiltering("sentAt.specified=true", "sentAt.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByDeliveredAtIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where deliveredAt equals to
+        defaultNotificationFiltering("deliveredAt.equals=" + DEFAULT_DELIVERED_AT, "deliveredAt.equals=" + UPDATED_DELIVERED_AT);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByDeliveredAtIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where deliveredAt in
         defaultNotificationFiltering(
-            "scheduledAt.in=" + DEFAULT_SCHEDULED_AT + "," + UPDATED_SCHEDULED_AT,
-            "scheduledAt.in=" + UPDATED_SCHEDULED_AT
+            "deliveredAt.in=" + DEFAULT_DELIVERED_AT + "," + UPDATED_DELIVERED_AT,
+            "deliveredAt.in=" + UPDATED_DELIVERED_AT
         );
     }
 
     @Test
     @Transactional
-    void getAllNotificationsByScheduledAtIsNullOrNotNull() throws Exception {
+    void getAllNotificationsByDeliveredAtIsNullOrNotNull() throws Exception {
         // Initialize the database
         insertedNotification = notificationRepository.saveAndFlush(notification);
 
-        // Get all the notificationList where scheduledAt is not null
-        defaultNotificationFiltering("scheduledAt.specified=true", "scheduledAt.specified=false");
+        // Get all the notificationList where deliveredAt is not null
+        defaultNotificationFiltering("deliveredAt.specified=true", "deliveredAt.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByReadAtIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where readAt equals to
+        defaultNotificationFiltering("readAt.equals=" + DEFAULT_READ_AT, "readAt.equals=" + UPDATED_READ_AT);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByReadAtIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where readAt in
+        defaultNotificationFiltering("readAt.in=" + DEFAULT_READ_AT + "," + UPDATED_READ_AT, "readAt.in=" + UPDATED_READ_AT);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByReadAtIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where readAt is not null
+        defaultNotificationFiltering("readAt.specified=true", "readAt.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByStatusIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where status equals to
+        defaultNotificationFiltering("status.equals=" + DEFAULT_STATUS, "status.equals=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByStatusIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where status in
+        defaultNotificationFiltering("status.in=" + DEFAULT_STATUS + "," + UPDATED_STATUS, "status.in=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByStatusIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where status is not null
+        defaultNotificationFiltering("status.specified=true", "status.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByStatusContainsSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where status contains
+        defaultNotificationFiltering("status.contains=" + DEFAULT_STATUS, "status.contains=" + UPDATED_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByStatusNotContainsSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where status does not contain
+        defaultNotificationFiltering("status.doesNotContain=" + UPDATED_STATUS, "status.doesNotContain=" + DEFAULT_STATUS);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByBookingIdIsEqualToSomething() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where bookingId equals to
+        defaultNotificationFiltering("bookingId.equals=" + DEFAULT_BOOKING_ID, "bookingId.equals=" + UPDATED_BOOKING_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByBookingIdIsInShouldWork() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where bookingId in
+        defaultNotificationFiltering("bookingId.in=" + DEFAULT_BOOKING_ID + "," + UPDATED_BOOKING_ID, "bookingId.in=" + UPDATED_BOOKING_ID);
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByBookingIdIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        insertedNotification = notificationRepository.saveAndFlush(notification);
+
+        // Get all the notificationList where bookingId is not null
+        defaultNotificationFiltering("bookingId.specified=true", "bookingId.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllNotificationsByTemplateIsEqualToSomething() throws Exception {
+        NotificationTemplate template;
+        if (TestUtil.findAll(em, NotificationTemplate.class).isEmpty()) {
+            notificationRepository.saveAndFlush(notification);
+            template = NotificationTemplateResourceIT.createEntity();
+        } else {
+            template = TestUtil.findAll(em, NotificationTemplate.class).get(0);
+        }
+        em.persist(template);
+        em.flush();
+        notification.setTemplate(template);
+        notificationRepository.saveAndFlush(notification);
+        Long templateId = template.getId();
+        // Get all the notificationList where template equals to templateId
+        defaultNotificationShouldBeFound("templateId.equals=" + templateId);
+
+        // Get all the notificationList where template equals to (templateId + 1)
+        defaultNotificationShouldNotBeFound("templateId.equals=" + (templateId + 1));
     }
 
     private void defaultNotificationFiltering(String shouldBeFound, String shouldNotBeFound) throws Exception {
@@ -671,16 +760,18 @@ class NotificationResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(notification.getId().toString())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(notification.getId().intValue())))
             .andExpect(jsonPath("$.[*].recipientId").value(hasItem(DEFAULT_RECIPIENT_ID.toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE)))
-            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)))
-            .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE)))
-            .andExpect(jsonPath("$.[*].isRead").value(hasItem(DEFAULT_IS_READ)))
-            .andExpect(jsonPath("$.[*].relatedEntityType").value(hasItem(DEFAULT_RELATED_ENTITY_TYPE)))
-            .andExpect(jsonPath("$.[*].relatedEntityId").value(hasItem(DEFAULT_RELATED_ENTITY_ID.toString())))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
-            .andExpect(jsonPath("$.[*].scheduledAt").value(hasItem(DEFAULT_SCHEDULED_AT.toString())));
+            .andExpect(jsonPath("$.[*].templateType").value(hasItem(DEFAULT_TEMPLATE_TYPE)))
+            .andExpect(jsonPath("$.[*].templateLanguage").value(hasItem(DEFAULT_TEMPLATE_LANGUAGE)))
+            .andExpect(jsonPath("$.[*].channel").value(hasItem(DEFAULT_CHANNEL)))
+            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT)))
+            .andExpect(jsonPath("$.[*].metadata").value(hasItem(DEFAULT_METADATA)))
+            .andExpect(jsonPath("$.[*].sentAt").value(hasItem(DEFAULT_SENT_AT.toString())))
+            .andExpect(jsonPath("$.[*].deliveredAt").value(hasItem(DEFAULT_DELIVERED_AT.toString())))
+            .andExpect(jsonPath("$.[*].readAt").value(hasItem(DEFAULT_READ_AT.toString())))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)))
+            .andExpect(jsonPath("$.[*].bookingId").value(hasItem(DEFAULT_BOOKING_ID.toString())));
 
         // Check, that the count call also returns 1
         restNotificationMockMvc
@@ -713,7 +804,7 @@ class NotificationResourceIT {
     @Transactional
     void getNonExistingNotification() throws Exception {
         // Get the notification
-        restNotificationMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
+        restNotificationMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -730,14 +821,16 @@ class NotificationResourceIT {
         em.detach(updatedNotification);
         updatedNotification
             .recipientId(UPDATED_RECIPIENT_ID)
-            .type(UPDATED_TYPE)
-            .title(UPDATED_TITLE)
-            .message(UPDATED_MESSAGE)
-            .isRead(UPDATED_IS_READ)
-            .relatedEntityType(UPDATED_RELATED_ENTITY_TYPE)
-            .relatedEntityId(UPDATED_RELATED_ENTITY_ID)
-            .createdAt(UPDATED_CREATED_AT)
-            .scheduledAt(UPDATED_SCHEDULED_AT);
+            .templateType(UPDATED_TEMPLATE_TYPE)
+            .templateLanguage(UPDATED_TEMPLATE_LANGUAGE)
+            .channel(UPDATED_CHANNEL)
+            .content(UPDATED_CONTENT)
+            .metadata(UPDATED_METADATA)
+            .sentAt(UPDATED_SENT_AT)
+            .deliveredAt(UPDATED_DELIVERED_AT)
+            .readAt(UPDATED_READ_AT)
+            .status(UPDATED_STATUS)
+            .bookingId(UPDATED_BOOKING_ID);
         NotificationDTO notificationDTO = notificationMapper.toDto(updatedNotification);
 
         restNotificationMockMvc
@@ -758,7 +851,7 @@ class NotificationResourceIT {
     @Transactional
     void putNonExistingNotification() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        notification.setId(UUID.randomUUID());
+        notification.setId(longCount.incrementAndGet());
 
         // Create the Notification
         NotificationDTO notificationDTO = notificationMapper.toDto(notification);
@@ -781,7 +874,7 @@ class NotificationResourceIT {
     @Transactional
     void putWithIdMismatchNotification() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        notification.setId(UUID.randomUUID());
+        notification.setId(longCount.incrementAndGet());
 
         // Create the Notification
         NotificationDTO notificationDTO = notificationMapper.toDto(notification);
@@ -789,7 +882,7 @@ class NotificationResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restNotificationMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, UUID.randomUUID())
+                put(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(notificationDTO))
@@ -804,7 +897,7 @@ class NotificationResourceIT {
     @Transactional
     void putWithMissingIdPathParamNotification() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        notification.setId(UUID.randomUUID());
+        notification.setId(longCount.incrementAndGet());
 
         // Create the Notification
         NotificationDTO notificationDTO = notificationMapper.toDto(notification);
@@ -834,12 +927,14 @@ class NotificationResourceIT {
 
         partialUpdatedNotification
             .recipientId(UPDATED_RECIPIENT_ID)
-            .title(UPDATED_TITLE)
-            .message(UPDATED_MESSAGE)
-            .isRead(UPDATED_IS_READ)
-            .relatedEntityId(UPDATED_RELATED_ENTITY_ID)
-            .createdAt(UPDATED_CREATED_AT)
-            .scheduledAt(UPDATED_SCHEDULED_AT);
+            .templateLanguage(UPDATED_TEMPLATE_LANGUAGE)
+            .channel(UPDATED_CHANNEL)
+            .content(UPDATED_CONTENT)
+            .sentAt(UPDATED_SENT_AT)
+            .deliveredAt(UPDATED_DELIVERED_AT)
+            .readAt(UPDATED_READ_AT)
+            .status(UPDATED_STATUS)
+            .bookingId(UPDATED_BOOKING_ID);
 
         restNotificationMockMvc
             .perform(
@@ -873,14 +968,16 @@ class NotificationResourceIT {
 
         partialUpdatedNotification
             .recipientId(UPDATED_RECIPIENT_ID)
-            .type(UPDATED_TYPE)
-            .title(UPDATED_TITLE)
-            .message(UPDATED_MESSAGE)
-            .isRead(UPDATED_IS_READ)
-            .relatedEntityType(UPDATED_RELATED_ENTITY_TYPE)
-            .relatedEntityId(UPDATED_RELATED_ENTITY_ID)
-            .createdAt(UPDATED_CREATED_AT)
-            .scheduledAt(UPDATED_SCHEDULED_AT);
+            .templateType(UPDATED_TEMPLATE_TYPE)
+            .templateLanguage(UPDATED_TEMPLATE_LANGUAGE)
+            .channel(UPDATED_CHANNEL)
+            .content(UPDATED_CONTENT)
+            .metadata(UPDATED_METADATA)
+            .sentAt(UPDATED_SENT_AT)
+            .deliveredAt(UPDATED_DELIVERED_AT)
+            .readAt(UPDATED_READ_AT)
+            .status(UPDATED_STATUS)
+            .bookingId(UPDATED_BOOKING_ID);
 
         restNotificationMockMvc
             .perform(
@@ -901,7 +998,7 @@ class NotificationResourceIT {
     @Transactional
     void patchNonExistingNotification() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        notification.setId(UUID.randomUUID());
+        notification.setId(longCount.incrementAndGet());
 
         // Create the Notification
         NotificationDTO notificationDTO = notificationMapper.toDto(notification);
@@ -924,7 +1021,7 @@ class NotificationResourceIT {
     @Transactional
     void patchWithIdMismatchNotification() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        notification.setId(UUID.randomUUID());
+        notification.setId(longCount.incrementAndGet());
 
         // Create the Notification
         NotificationDTO notificationDTO = notificationMapper.toDto(notification);
@@ -932,7 +1029,7 @@ class NotificationResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restNotificationMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, UUID.randomUUID())
+                patch(ENTITY_API_URL_ID, longCount.incrementAndGet())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(om.writeValueAsBytes(notificationDTO))
@@ -947,7 +1044,7 @@ class NotificationResourceIT {
     @Transactional
     void patchWithMissingIdPathParamNotification() throws Exception {
         long databaseSizeBeforeUpdate = getRepositoryCount();
-        notification.setId(UUID.randomUUID());
+        notification.setId(longCount.incrementAndGet());
 
         // Create the Notification
         NotificationDTO notificationDTO = notificationMapper.toDto(notification);
@@ -976,7 +1073,7 @@ class NotificationResourceIT {
 
         // Delete the notification
         restNotificationMockMvc
-            .perform(delete(ENTITY_API_URL_ID, notification.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, notification.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -22,38 +22,47 @@ public class NotificationCriteria implements Serializable, Criteria {
 
     private static final long serialVersionUID = 1L;
 
-    private UUIDFilter id;
+    private LongFilter id;
 
     private UUIDFilter recipientId;
 
-    private StringFilter type;
+    private StringFilter templateType;
 
-    private StringFilter title;
+    private StringFilter templateLanguage;
 
-    private BooleanFilter isRead;
+    private StringFilter channel;
 
-    private StringFilter relatedEntityType;
+    private StringFilter metadata;
 
-    private UUIDFilter relatedEntityId;
+    private InstantFilter sentAt;
 
-    private InstantFilter createdAt;
+    private InstantFilter deliveredAt;
 
-    private InstantFilter scheduledAt;
+    private InstantFilter readAt;
+
+    private StringFilter status;
+
+    private UUIDFilter bookingId;
+
+    private LongFilter templateId;
 
     private Boolean distinct;
 
     public NotificationCriteria() {}
 
     public NotificationCriteria(NotificationCriteria other) {
-        this.id = other.optionalId().map(UUIDFilter::copy).orElse(null);
+        this.id = other.optionalId().map(LongFilter::copy).orElse(null);
         this.recipientId = other.optionalRecipientId().map(UUIDFilter::copy).orElse(null);
-        this.type = other.optionalType().map(StringFilter::copy).orElse(null);
-        this.title = other.optionalTitle().map(StringFilter::copy).orElse(null);
-        this.isRead = other.optionalIsRead().map(BooleanFilter::copy).orElse(null);
-        this.relatedEntityType = other.optionalRelatedEntityType().map(StringFilter::copy).orElse(null);
-        this.relatedEntityId = other.optionalRelatedEntityId().map(UUIDFilter::copy).orElse(null);
-        this.createdAt = other.optionalCreatedAt().map(InstantFilter::copy).orElse(null);
-        this.scheduledAt = other.optionalScheduledAt().map(InstantFilter::copy).orElse(null);
+        this.templateType = other.optionalTemplateType().map(StringFilter::copy).orElse(null);
+        this.templateLanguage = other.optionalTemplateLanguage().map(StringFilter::copy).orElse(null);
+        this.channel = other.optionalChannel().map(StringFilter::copy).orElse(null);
+        this.metadata = other.optionalMetadata().map(StringFilter::copy).orElse(null);
+        this.sentAt = other.optionalSentAt().map(InstantFilter::copy).orElse(null);
+        this.deliveredAt = other.optionalDeliveredAt().map(InstantFilter::copy).orElse(null);
+        this.readAt = other.optionalReadAt().map(InstantFilter::copy).orElse(null);
+        this.status = other.optionalStatus().map(StringFilter::copy).orElse(null);
+        this.bookingId = other.optionalBookingId().map(UUIDFilter::copy).orElse(null);
+        this.templateId = other.optionalTemplateId().map(LongFilter::copy).orElse(null);
         this.distinct = other.distinct;
     }
 
@@ -62,22 +71,22 @@ public class NotificationCriteria implements Serializable, Criteria {
         return new NotificationCriteria(this);
     }
 
-    public UUIDFilter getId() {
+    public LongFilter getId() {
         return id;
     }
 
-    public Optional<UUIDFilter> optionalId() {
+    public Optional<LongFilter> optionalId() {
         return Optional.ofNullable(id);
     }
 
-    public UUIDFilter id() {
+    public LongFilter id() {
         if (id == null) {
-            setId(new UUIDFilter());
+            setId(new LongFilter());
         }
         return id;
     }
 
-    public void setId(UUIDFilter id) {
+    public void setId(LongFilter id) {
         this.id = id;
     }
 
@@ -100,137 +109,194 @@ public class NotificationCriteria implements Serializable, Criteria {
         this.recipientId = recipientId;
     }
 
-    public StringFilter getType() {
-        return type;
+    public StringFilter getTemplateType() {
+        return templateType;
     }
 
-    public Optional<StringFilter> optionalType() {
-        return Optional.ofNullable(type);
+    public Optional<StringFilter> optionalTemplateType() {
+        return Optional.ofNullable(templateType);
     }
 
-    public StringFilter type() {
-        if (type == null) {
-            setType(new StringFilter());
+    public StringFilter templateType() {
+        if (templateType == null) {
+            setTemplateType(new StringFilter());
         }
-        return type;
+        return templateType;
     }
 
-    public void setType(StringFilter type) {
-        this.type = type;
+    public void setTemplateType(StringFilter templateType) {
+        this.templateType = templateType;
     }
 
-    public StringFilter getTitle() {
-        return title;
+    public StringFilter getTemplateLanguage() {
+        return templateLanguage;
     }
 
-    public Optional<StringFilter> optionalTitle() {
-        return Optional.ofNullable(title);
+    public Optional<StringFilter> optionalTemplateLanguage() {
+        return Optional.ofNullable(templateLanguage);
     }
 
-    public StringFilter title() {
-        if (title == null) {
-            setTitle(new StringFilter());
+    public StringFilter templateLanguage() {
+        if (templateLanguage == null) {
+            setTemplateLanguage(new StringFilter());
         }
-        return title;
+        return templateLanguage;
     }
 
-    public void setTitle(StringFilter title) {
-        this.title = title;
+    public void setTemplateLanguage(StringFilter templateLanguage) {
+        this.templateLanguage = templateLanguage;
     }
 
-    public BooleanFilter getIsRead() {
-        return isRead;
+    public StringFilter getChannel() {
+        return channel;
     }
 
-    public Optional<BooleanFilter> optionalIsRead() {
-        return Optional.ofNullable(isRead);
+    public Optional<StringFilter> optionalChannel() {
+        return Optional.ofNullable(channel);
     }
 
-    public BooleanFilter isRead() {
-        if (isRead == null) {
-            setIsRead(new BooleanFilter());
+    public StringFilter channel() {
+        if (channel == null) {
+            setChannel(new StringFilter());
         }
-        return isRead;
+        return channel;
     }
 
-    public void setIsRead(BooleanFilter isRead) {
-        this.isRead = isRead;
+    public void setChannel(StringFilter channel) {
+        this.channel = channel;
     }
 
-    public StringFilter getRelatedEntityType() {
-        return relatedEntityType;
+    public StringFilter getMetadata() {
+        return metadata;
     }
 
-    public Optional<StringFilter> optionalRelatedEntityType() {
-        return Optional.ofNullable(relatedEntityType);
+    public Optional<StringFilter> optionalMetadata() {
+        return Optional.ofNullable(metadata);
     }
 
-    public StringFilter relatedEntityType() {
-        if (relatedEntityType == null) {
-            setRelatedEntityType(new StringFilter());
+    public StringFilter metadata() {
+        if (metadata == null) {
+            setMetadata(new StringFilter());
         }
-        return relatedEntityType;
+        return metadata;
     }
 
-    public void setRelatedEntityType(StringFilter relatedEntityType) {
-        this.relatedEntityType = relatedEntityType;
+    public void setMetadata(StringFilter metadata) {
+        this.metadata = metadata;
     }
 
-    public UUIDFilter getRelatedEntityId() {
-        return relatedEntityId;
+    public InstantFilter getSentAt() {
+        return sentAt;
     }
 
-    public Optional<UUIDFilter> optionalRelatedEntityId() {
-        return Optional.ofNullable(relatedEntityId);
+    public Optional<InstantFilter> optionalSentAt() {
+        return Optional.ofNullable(sentAt);
     }
 
-    public UUIDFilter relatedEntityId() {
-        if (relatedEntityId == null) {
-            setRelatedEntityId(new UUIDFilter());
+    public InstantFilter sentAt() {
+        if (sentAt == null) {
+            setSentAt(new InstantFilter());
         }
-        return relatedEntityId;
+        return sentAt;
     }
 
-    public void setRelatedEntityId(UUIDFilter relatedEntityId) {
-        this.relatedEntityId = relatedEntityId;
+    public void setSentAt(InstantFilter sentAt) {
+        this.sentAt = sentAt;
     }
 
-    public InstantFilter getCreatedAt() {
-        return createdAt;
+    public InstantFilter getDeliveredAt() {
+        return deliveredAt;
     }
 
-    public Optional<InstantFilter> optionalCreatedAt() {
-        return Optional.ofNullable(createdAt);
+    public Optional<InstantFilter> optionalDeliveredAt() {
+        return Optional.ofNullable(deliveredAt);
     }
 
-    public InstantFilter createdAt() {
-        if (createdAt == null) {
-            setCreatedAt(new InstantFilter());
+    public InstantFilter deliveredAt() {
+        if (deliveredAt == null) {
+            setDeliveredAt(new InstantFilter());
         }
-        return createdAt;
+        return deliveredAt;
     }
 
-    public void setCreatedAt(InstantFilter createdAt) {
-        this.createdAt = createdAt;
+    public void setDeliveredAt(InstantFilter deliveredAt) {
+        this.deliveredAt = deliveredAt;
     }
 
-    public InstantFilter getScheduledAt() {
-        return scheduledAt;
+    public InstantFilter getReadAt() {
+        return readAt;
     }
 
-    public Optional<InstantFilter> optionalScheduledAt() {
-        return Optional.ofNullable(scheduledAt);
+    public Optional<InstantFilter> optionalReadAt() {
+        return Optional.ofNullable(readAt);
     }
 
-    public InstantFilter scheduledAt() {
-        if (scheduledAt == null) {
-            setScheduledAt(new InstantFilter());
+    public InstantFilter readAt() {
+        if (readAt == null) {
+            setReadAt(new InstantFilter());
         }
-        return scheduledAt;
+        return readAt;
     }
 
-    public void setScheduledAt(InstantFilter scheduledAt) {
-        this.scheduledAt = scheduledAt;
+    public void setReadAt(InstantFilter readAt) {
+        this.readAt = readAt;
+    }
+
+    public StringFilter getStatus() {
+        return status;
+    }
+
+    public Optional<StringFilter> optionalStatus() {
+        return Optional.ofNullable(status);
+    }
+
+    public StringFilter status() {
+        if (status == null) {
+            setStatus(new StringFilter());
+        }
+        return status;
+    }
+
+    public void setStatus(StringFilter status) {
+        this.status = status;
+    }
+
+    public UUIDFilter getBookingId() {
+        return bookingId;
+    }
+
+    public Optional<UUIDFilter> optionalBookingId() {
+        return Optional.ofNullable(bookingId);
+    }
+
+    public UUIDFilter bookingId() {
+        if (bookingId == null) {
+            setBookingId(new UUIDFilter());
+        }
+        return bookingId;
+    }
+
+    public void setBookingId(UUIDFilter bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public LongFilter getTemplateId() {
+        return templateId;
+    }
+
+    public Optional<LongFilter> optionalTemplateId() {
+        return Optional.ofNullable(templateId);
+    }
+
+    public LongFilter templateId() {
+        if (templateId == null) {
+            setTemplateId(new LongFilter());
+        }
+        return templateId;
+    }
+
+    public void setTemplateId(LongFilter templateId) {
+        this.templateId = templateId;
     }
 
     public Boolean getDistinct() {
@@ -264,20 +330,37 @@ public class NotificationCriteria implements Serializable, Criteria {
         return (
             Objects.equals(id, that.id) &&
             Objects.equals(recipientId, that.recipientId) &&
-            Objects.equals(type, that.type) &&
-            Objects.equals(title, that.title) &&
-            Objects.equals(isRead, that.isRead) &&
-            Objects.equals(relatedEntityType, that.relatedEntityType) &&
-            Objects.equals(relatedEntityId, that.relatedEntityId) &&
-            Objects.equals(createdAt, that.createdAt) &&
-            Objects.equals(scheduledAt, that.scheduledAt) &&
+            Objects.equals(templateType, that.templateType) &&
+            Objects.equals(templateLanguage, that.templateLanguage) &&
+            Objects.equals(channel, that.channel) &&
+            Objects.equals(metadata, that.metadata) &&
+            Objects.equals(sentAt, that.sentAt) &&
+            Objects.equals(deliveredAt, that.deliveredAt) &&
+            Objects.equals(readAt, that.readAt) &&
+            Objects.equals(status, that.status) &&
+            Objects.equals(bookingId, that.bookingId) &&
+            Objects.equals(templateId, that.templateId) &&
             Objects.equals(distinct, that.distinct)
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, recipientId, type, title, isRead, relatedEntityType, relatedEntityId, createdAt, scheduledAt, distinct);
+        return Objects.hash(
+            id,
+            recipientId,
+            templateType,
+            templateLanguage,
+            channel,
+            metadata,
+            sentAt,
+            deliveredAt,
+            readAt,
+            status,
+            bookingId,
+            templateId,
+            distinct
+        );
     }
 
     // prettier-ignore
@@ -286,13 +369,16 @@ public class NotificationCriteria implements Serializable, Criteria {
         return "NotificationCriteria{" +
             optionalId().map(f -> "id=" + f + ", ").orElse("") +
             optionalRecipientId().map(f -> "recipientId=" + f + ", ").orElse("") +
-            optionalType().map(f -> "type=" + f + ", ").orElse("") +
-            optionalTitle().map(f -> "title=" + f + ", ").orElse("") +
-            optionalIsRead().map(f -> "isRead=" + f + ", ").orElse("") +
-            optionalRelatedEntityType().map(f -> "relatedEntityType=" + f + ", ").orElse("") +
-            optionalRelatedEntityId().map(f -> "relatedEntityId=" + f + ", ").orElse("") +
-            optionalCreatedAt().map(f -> "createdAt=" + f + ", ").orElse("") +
-            optionalScheduledAt().map(f -> "scheduledAt=" + f + ", ").orElse("") +
+            optionalTemplateType().map(f -> "templateType=" + f + ", ").orElse("") +
+            optionalTemplateLanguage().map(f -> "templateLanguage=" + f + ", ").orElse("") +
+            optionalChannel().map(f -> "channel=" + f + ", ").orElse("") +
+            optionalMetadata().map(f -> "metadata=" + f + ", ").orElse("") +
+            optionalSentAt().map(f -> "sentAt=" + f + ", ").orElse("") +
+            optionalDeliveredAt().map(f -> "deliveredAt=" + f + ", ").orElse("") +
+            optionalReadAt().map(f -> "readAt=" + f + ", ").orElse("") +
+            optionalStatus().map(f -> "status=" + f + ", ").orElse("") +
+            optionalBookingId().map(f -> "bookingId=" + f + ", ").orElse("") +
+            optionalTemplateId().map(f -> "templateId=" + f + ", ").orElse("") +
             optionalDistinct().map(f -> "distinct=" + f + ", ").orElse("") +
         "}";
     }
