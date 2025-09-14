@@ -1,0 +1,6 @@
+org.springframework.test.context.ContextCustomizerFactory = \
+    com.ticketsystem.notification.config.\
+    SqlTestContainersSpringContextCustomizerFactory,com.ticketsystem.\
+    notification.config.RedisTestContainersSpringContextCustomizerFactory,com.\
+    ticketsystem.notification.config.\
+    KafkaTestContainersSpringContextCustomizerFactory
